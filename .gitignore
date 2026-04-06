@@ -26,7 +26,10 @@ temp/
 review/
 
 # Auto-generated docs (WASM playground)
-docs/
+docs/*.html
+docs/*.css
+docs/*.js
+!docs/site/
 
 # Generated SVG files in root (keep assets/ copies)
 /*.svg

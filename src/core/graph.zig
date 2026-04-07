@@ -69,6 +69,37 @@ pub const NodeShape = enum {
     asymmetric,
 };
 
+/// Visibility modifier for class diagram fields/methods.
+pub const Visibility = enum {
+    none,
+    public,    // +
+    private,   // -
+    protected, // #
+};
+
+/// Constraint on a database field.
+pub const Constraint = enum {
+    pk,
+    fk,
+    not_null,
+    unique,
+    auto_increment,
+};
+
+/// A field within a card section.
+pub const CardField = struct {
+    name: []const u8,
+    type_name: ?[]const u8 = null,
+    visibility: Visibility = .none,
+    constraints: []const Constraint = &.{},
+};
+
+/// A named section within a card node (e.g., "Fields", "Methods").
+pub const CardSection = struct {
+    title: ?[]const u8 = null,
+    fields: []const CardField = &.{},
+};
+
 /// Options for creating a node with explicit dimensions.
 ///
 /// Used via `addNode(id, .{ .label = "card", .width = 40, .height = 3 })`.
@@ -87,6 +118,9 @@ pub const NodeOptions = struct {
     lines: []const []const u8 = &.{},
     /// Node shape (default: rect)
     shape: NodeShape = .rect,
+    /// Multi-section card content (for ER/class diagrams).
+    /// When set, overrides `lines` for rendering.
+    sections: []const CardSection = &.{},
 };
 
 /// A node in the graph.
@@ -109,6 +143,8 @@ pub const Node = struct {
     lines: []const []const u8 = &.{},
     /// Node shape for rendering
     shape: NodeShape = .rect,
+    /// Multi-section card content (empty = use lines or simple label)
+    sections: []const CardSection = &.{},
 
     pub fn init(id: usize, label: []const u8) Node {
         // Width = "[" + label + "]" = label.len + 2
@@ -124,16 +160,40 @@ pub const Node = struct {
         var effective_width = if (opts.width > 0) opts.width else opts.label.len + 2;
         var effective_height = opts.height;
 
-        if (opts.lines.len > 0) {
-            // Card node: auto-compute dimensions from content
-            // Width = max(label, all lines) + 2 (borders)
+        if (opts.sections.len > 0) {
+            // Sectioned card: compute dimensions from sections
+            for (opts.sections) |section| {
+                if (section.title) |title| {
+                    if (title.len + 2 > effective_width) {
+                        effective_width = title.len + 2;
+                    }
+                }
+                for (section.fields) |field| {
+                    var field_len: usize = field.name.len;
+                    if (field.visibility != .none) field_len += 2; // "+ " prefix
+                    if (field.type_name) |tn| field_len += tn.len + 2; // ": type"
+                    if (field.constraints.len > 0) field_len += field.constraints.len * 3; // " PK" etc
+                    if (field_len + 2 > effective_width) {
+                        effective_width = field_len + 2;
+                    }
+                }
+            }
+            // Height = top(1) + header(1) + per section: sep(1) + field_count + bottom(1)
+            if (opts.height == 1) {
+                var h: usize = 3; // top + header + bottom
+                for (opts.sections) |section| {
+                    h += 1; // separator line
+                    h += section.fields.len;
+                }
+                effective_height = h;
+            }
+        } else if (opts.lines.len > 0) {
             for (opts.lines) |line| {
                 if (line.len + 2 > effective_width) {
                     effective_width = line.len + 2;
                 }
             }
-            // Height = top border(1) + header(1) + separator(1) + lines + bottom border(1)
-            if (opts.height == 1) { // only auto-compute if not explicitly set
+            if (opts.height == 1) {
                 effective_height = opts.lines.len + 4;
             }
         }
@@ -146,6 +206,7 @@ pub const Node = struct {
             .pin = opts.pin,
             .lines = opts.lines,
             .shape = opts.shape,
+            .sections = opts.sections,
         };
     }
 };
@@ -1141,4 +1202,35 @@ test "Edge: carries decorator" {
     };
     try std.testing.expect(edge.decorator.line_style == .dashed);
     try std.testing.expect(edge.decorator.end_marker == .hollow_arrow);
+}
+
+test "CardSection: field with visibility and constraints" {
+    const field = CardField{
+        .name = "id",
+        .type_name = "INT",
+        .visibility = .public,
+        .constraints = &.{ .pk, .auto_increment },
+    };
+    try std.testing.expectEqualStrings("id", field.name);
+    try std.testing.expectEqualStrings("INT", field.type_name.?);
+    try std.testing.expect(field.visibility == .public);
+    try std.testing.expectEqual(@as(usize, 2), field.constraints.len);
+}
+
+test "Node.initFromOptions: sections compute height" {
+    const sections = [_]CardSection{
+        .{
+            .fields = &.{
+                .{ .name = "id" },
+                .{ .name = "name" },
+            },
+        },
+    };
+    const node = Node.initFromOptions(1, .{
+        .label = "users",
+        .sections = &sections,
+    });
+    // top(1) + header(1) + sep(1) + 2 fields + bottom(1) = 6
+    try std.testing.expectEqual(@as(usize, 6), node.height);
+    try std.testing.expectEqual(@as(usize, 1), node.sections.len);
 }

@@ -81,6 +81,9 @@ pub fn LayoutNode(comptime Coord: type) type {
         lines: []const []const u8 = &.{},
         /// Node shape for rendering (from graph model)
         shape: graph_mod.NodeShape = .rect,
+        /// Multi-section card content (empty = use lines or simple label).
+        /// Borrowed from the Graph node — valid as long as the Graph is alive.
+        sections: []const graph_mod.CardSection = &.{},
     };
 }
 
@@ -415,6 +418,7 @@ pub fn LayoutIR(comptime Coord: type) type {
                     .kind = node.kind,
                     .edge_index = node.edge_index,
                     .shape = node.shape,
+                    .sections = node.sections,
                 });
             }
 

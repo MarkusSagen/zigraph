@@ -251,6 +251,15 @@ pub const gantt = struct {
     pub const toDrawing = @import("primitives/gantt/ir.zig").toDrawing;
 };
 
+/// Mindmap primitive
+pub const mindmap = struct {
+    pub const model = @import("primitives/mindmap/model.zig");
+    pub const layout = @import("primitives/mindmap/layout.zig");
+    pub const ir = @import("primitives/mindmap/ir.zig");
+    pub const Mindmap = model.Mindmap;
+    pub const toDrawing = @import("primitives/mindmap/ir.zig").toDrawing;
+};
+
 // ============================================================================
 // Layout configuration
 // ============================================================================

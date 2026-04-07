@@ -230,6 +230,19 @@ pub const terminal_subgraph_presets = terminal.subgraph_presets;
 pub const terminal_node_presets = terminal.node_presets;
 
 // ============================================================================
+// Diagram primitives
+// ============================================================================
+
+/// Sequence diagram primitive
+pub const sequence = struct {
+    pub const model = @import("primitives/sequence/model.zig");
+    pub const layout = @import("primitives/sequence/layout.zig");
+    pub const ir = @import("primitives/sequence/ir.zig");
+    pub const Sequence = model.Sequence;
+    pub const toDrawing = @import("primitives/sequence/ir.zig").toDrawing;
+};
+
+// ============================================================================
 // Layout configuration
 // ============================================================================
 

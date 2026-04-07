@@ -79,6 +79,8 @@ pub fn LayoutNode(comptime Coord: type) type {
         /// Multi-line card content (empty = standard single-line node).
         /// Borrowed from the Graph node — valid as long as the Graph is alive.
         lines: []const []const u8 = &.{},
+        /// Node shape for rendering (from graph model)
+        shape: graph_mod.NodeShape = .rect,
     };
 }
 
@@ -406,6 +408,7 @@ pub fn LayoutIR(comptime Coord: type) type {
                     .level_position = node.level_position,
                     .kind = node.kind,
                     .edge_index = node.edge_index,
+                    .shape = node.shape,
                 });
             }
 

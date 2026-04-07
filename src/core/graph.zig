@@ -51,6 +51,24 @@ pub const Pin = struct {
     y: ?usize = null,
 };
 
+/// Shape of a node when rendered.
+/// Terminal renderer approximates these with box-drawing/ASCII art.
+/// SVG renderer emits actual geometric shapes.
+pub const NodeShape = enum {
+    rect,
+    rounded_rect,
+    diamond,
+    parallelogram,
+    cylinder,
+    stadium,
+    circle,
+    hexagon,
+    trapezoid,
+    double_circle,
+    subroutine,
+    asymmetric,
+};
+
 /// Options for creating a node with explicit dimensions.
 ///
 /// Used via `addNode(id, .{ .label = "card", .width = 40, .height = 3 })`.
@@ -67,6 +85,8 @@ pub const NodeOptions = struct {
     /// Multi-line content for card nodes (displayed inside the box below a separator).
     /// When set, height is auto-computed: top(1) + header(1) + sep(1) + lines.len + bottom(1).
     lines: []const []const u8 = &.{},
+    /// Node shape (default: rect)
+    shape: NodeShape = .rect,
 };
 
 /// A node in the graph.
@@ -87,6 +107,8 @@ pub const Node = struct {
     pin: ?Pin = null,
     /// Multi-line card content (empty = standard single-line node)
     lines: []const []const u8 = &.{},
+    /// Node shape for rendering
+    shape: NodeShape = .rect,
 
     pub fn init(id: usize, label: []const u8) Node {
         // Width = "[" + label + "]" = label.len + 2
@@ -123,6 +145,7 @@ pub const Node = struct {
             .height = effective_height,
             .pin = opts.pin,
             .lines = opts.lines,
+            .shape = opts.shape,
         };
     }
 };

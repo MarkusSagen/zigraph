@@ -233,6 +233,8 @@ pub fn SubgraphInfo(comptime Coord: type) type {
         width: Coord,
         /// Bounding box height (includes padding)
         height: Coord,
+        /// Visual style for the subgraph boundary
+        style: graph_mod.SubgraphStyleKind = .default,
     };
 }
 
@@ -512,6 +514,7 @@ pub fn LayoutIR(comptime Coord: type) type {
                     .y = coordCast(Target, Coord, sg.y),
                     .width = coordCast(Target, Coord, sg.width),
                     .height = coordCast(Target, Coord, sg.height),
+                    .style = sg.style,
                 });
             }
 

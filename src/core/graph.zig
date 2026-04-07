@@ -211,6 +211,17 @@ pub const Node = struct {
     }
 };
 
+/// Visual style for subgraph boundaries.
+pub const SubgraphStyleKind = enum {
+    default,    // solid border
+    dashed,     // dashed border
+    cloud,      // cloud shape (SVG) / dashed rounded (terminal)
+    zone,       // shaded background region
+    system,     // C4 system boundary — bold border
+    container,  // C4 container boundary — dashed border
+    component,  // C4 component boundary — dotted border
+};
+
 /// A subgraph (cluster) that groups nodes together.
 ///
 /// Subgraphs form a tree hierarchy (not a DAG). Each node belongs to
@@ -223,6 +234,8 @@ pub const Subgraph = struct {
     label: []const u8,
     /// Parent subgraph ID (null = root-level subgraph)
     parent_id: ?usize = null,
+    /// Visual style for the subgraph boundary
+    style: SubgraphStyleKind = .default,
 };
 
 /// Line rendering style for edges.
@@ -1233,4 +1246,14 @@ test "Node.initFromOptions: sections compute height" {
     // top(1) + header(1) + sep(1) + 2 fields + bottom(1) = 6
     try std.testing.expectEqual(@as(usize, 6), node.height);
     try std.testing.expectEqual(@as(usize, 1), node.sections.len);
+}
+
+test "subgraph: style field defaults to .default" {
+    const allocator = std.testing.allocator;
+    var g = Graph.init(allocator);
+    defer g.deinit();
+
+    _ = try g.addSubgraph("Backend");
+    const sg = g.subgraphs.items[0];
+    try std.testing.expectEqual(SubgraphStyleKind.default, sg.style);
 }

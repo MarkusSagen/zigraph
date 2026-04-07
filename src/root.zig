@@ -37,6 +37,7 @@ pub const NodeKind = graph.NodeKind;
 pub const NodeOptions = graph.NodeOptions;
 pub const Pin = graph.Pin;
 pub const Subgraph = graph.Subgraph;
+pub const SubgraphStyleKind = graph.SubgraphStyleKind;
 pub const ValidationResult = graph.ValidationResult;
 pub const CycleInfo = graph.CycleInfo;
 

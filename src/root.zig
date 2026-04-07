@@ -179,6 +179,9 @@ pub const terminal = @import("render/terminal/mod.zig");
 /// JSON renderer for external tool integration
 pub const json = @import("render/json.zig");
 
+/// Drawing IR JSON serializer (schema v2.0)
+pub const drawing_json = @import("render/drawing_json.zig");
+
 /// SVG renderer for high-quality vector output and spline visualization
 pub const svg = @import("render/svg/mod.zig");
 

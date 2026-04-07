@@ -154,6 +154,9 @@ pub const HitResult = plan_mod.HitResult;
 pub const tree = @import("tree.zig");
 pub const card = @import("card.zig");
 
+const drawing_renderer = @import("drawing_renderer.zig");
+pub const renderDrawing = drawing_renderer.renderDrawing;
+
 // ── Force test inclusion for submodules ─────────────────────────────────────
 
 comptime {
@@ -170,6 +173,7 @@ comptime {
     _ = @import("tree_tests.zig");
     _ = @import("card.zig");
     _ = @import("card_tests.zig");
+    _ = @import("drawing_renderer.zig");
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────

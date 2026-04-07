@@ -63,6 +63,11 @@ pub const presets = @import("presets.zig");
 ///   const DefaultIR = ir.LayoutIR(usize);
 pub const ir = @import("core/ir.zig");
 pub const LayoutIR = ir.LayoutIR;
+
+/// Drawing IR — renderer-agnostic drawing primitives
+pub const drawing = @import("drawing/ir.zig");
+pub const DrawingPrimitive = drawing.DrawingPrimitive;
+pub const Drawing = drawing.Drawing;
 pub const LayoutNode = ir.LayoutNode;
 pub const LayoutEdge = ir.LayoutEdge;
 pub const EdgePath = ir.EdgePath;

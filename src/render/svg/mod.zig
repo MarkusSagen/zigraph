@@ -50,6 +50,7 @@ const subgraph_render = @import("subgraphs.zig");
 const defs_mod = @import("defs.zig");
 const helpers_mod = @import("helpers.zig");
 const types = @import("../types.zig");
+const drawing_renderer = @import("drawing_renderer.zig");
 
 // ── Public re-exports ───────────────────────────────────────────────────────
 
@@ -69,6 +70,7 @@ pub const ResolvedEdgeStyle = config_mod.ResolvedEdgeStyle;
 pub const defaultEdgeStyle = config_mod.defaultEdgeStyle;
 pub const monoEdgeStyle = config_mod.monoEdgeStyle;
 pub const renderBezierEdge = edge_render.renderBezierEdge;
+pub const renderDrawing = drawing_renderer.renderDrawing;
 
 const MarkerDef = defs_mod.MarkerDef;
 const findOrAddMarker = defs_mod.findOrAddMarker;
@@ -87,6 +89,7 @@ comptime {
     _ = subgraph_render;
     _ = defs_mod;
     _ = helpers_mod;
+    _ = drawing_renderer;
     _ = @import("render_tests.zig");
 }
 

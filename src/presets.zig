@@ -36,6 +36,10 @@ const crossing = root.crossing;
 const fdg = root.fdg;
 const errors = @import("core/errors.zig");
 const Requirements = errors.Requirements;
+const graph_mod = @import("core/graph.zig");
+const NodeShape = graph_mod.NodeShape;
+const MarkerType = graph_mod.MarkerType;
+const SubgraphStyleKind = graph_mod.SubgraphStyleKind;
 
 /// Preset metadata - configuration plus validation requirements.
 pub const Preset = struct {
@@ -181,6 +185,80 @@ pub const fdg_presets = struct {
     }
 };
 
+/// Diagram-type presets for common diagram patterns.
+/// These configure default node shapes, edge styles, and subgraph appearance.
+pub const DiagramConfig = struct {
+    default_node_shape: NodeShape = .rect,
+    start_node_shape: NodeShape = .rect,
+    end_node_shape: NodeShape = .rect,
+    default_start_marker: MarkerType = .none,
+    default_end_marker: MarkerType = .arrow,
+    default_subgraph_style: SubgraphStyleKind = .default,
+};
+
+pub const diagram = struct {
+    pub fn flowchart() DiagramConfig {
+        return .{
+            .default_node_shape = .rounded_rect,
+            .default_end_marker = .arrow,
+        };
+    }
+
+    pub fn er_diagram() DiagramConfig {
+        return .{
+            .default_node_shape = .rect,
+            .default_end_marker = .crow_foot_many,
+        };
+    }
+
+    pub fn class_diagram() DiagramConfig {
+        return .{
+            .default_node_shape = .rect,
+            .default_end_marker = .hollow_arrow,
+        };
+    }
+
+    pub fn state_diagram() DiagramConfig {
+        return .{
+            .start_node_shape = .double_circle,
+            .end_node_shape = .double_circle,
+            .default_end_marker = .arrow,
+        };
+    }
+
+    pub fn network() DiagramConfig {
+        return .{
+            .default_node_shape = .rect,
+            .default_subgraph_style = .cloud,
+            .default_end_marker = .none,
+        };
+    }
+
+    pub fn c4_context() DiagramConfig {
+        return .{
+            .default_node_shape = .rounded_rect,
+            .default_subgraph_style = .system,
+            .default_end_marker = .arrow,
+        };
+    }
+
+    pub fn c4_container() DiagramConfig {
+        return .{
+            .default_node_shape = .rounded_rect,
+            .default_subgraph_style = .container,
+            .default_end_marker = .arrow,
+        };
+    }
+
+    pub fn c4_component() DiagramConfig {
+        return .{
+            .default_node_shape = .rounded_rect,
+            .default_subgraph_style = .component,
+            .default_end_marker = .arrow,
+        };
+    }
+};
+
 // ============================================================================
 // Tests
 // ============================================================================
@@ -229,4 +307,19 @@ test "preset metadata includes requirements" {
     try std.testing.expect(fdg_preset.requirements.non_empty);
     try std.testing.expect(!fdg_preset.requirements.acyclic);
     try std.testing.expectEqualStrings("fdg.fast", fdg_preset.name);
+}
+
+test "preset: flowchart uses rounded_rect shape" {
+    const config = diagram.flowchart();
+    try std.testing.expectEqual(NodeShape.rounded_rect, config.default_node_shape);
+}
+
+test "preset: er_diagram uses crow_foot markers" {
+    const config = diagram.er_diagram();
+    try std.testing.expectEqual(MarkerType.crow_foot_many, config.default_end_marker);
+}
+
+test "preset: state_diagram uses double_circle for start" {
+    const config = diagram.state_diagram();
+    try std.testing.expectEqual(NodeShape.double_circle, config.start_node_shape);
 }

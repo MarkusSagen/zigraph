@@ -68,6 +68,9 @@ pub const LayoutIR = ir.LayoutIR;
 pub const drawing = @import("drawing/ir.zig");
 pub const DrawingPrimitive = drawing.DrawingPrimitive;
 pub const Drawing = drawing.Drawing;
+/// Drawing IR conversion (LayoutIR → DrawingIR)
+pub const drawing_convert = @import("drawing/convert.zig");
+pub const convertLayoutIR = drawing_convert.convertLayoutIR;
 pub const LayoutNode = ir.LayoutNode;
 pub const LayoutEdge = ir.LayoutEdge;
 pub const EdgePath = ir.EdgePath;

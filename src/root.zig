@@ -260,6 +260,24 @@ pub const mindmap = struct {
     pub const toDrawing = @import("primitives/mindmap/ir.zig").toDrawing;
 };
 
+/// Timeline primitive
+pub const timeline = struct {
+    pub const model = @import("primitives/timeline/model.zig");
+    pub const layout = @import("primitives/timeline/layout.zig");
+    pub const ir = @import("primitives/timeline/ir.zig");
+    pub const Timeline = model.Timeline;
+    pub const toDrawing = @import("primitives/timeline/ir.zig").toDrawing;
+};
+
+/// Git graph primitive
+pub const git_graph = struct {
+    pub const model = @import("primitives/git_graph/model.zig");
+    pub const layout = @import("primitives/git_graph/layout.zig");
+    pub const ir = @import("primitives/git_graph/ir.zig");
+    pub const GitGraph = model.GitGraph;
+    pub const toDrawing = @import("primitives/git_graph/ir.zig").toDrawing;
+};
+
 // ============================================================================
 // Layout configuration
 // ============================================================================

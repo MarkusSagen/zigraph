@@ -242,6 +242,15 @@ pub const sequence = struct {
     pub const toDrawing = @import("primitives/sequence/ir.zig").toDrawing;
 };
 
+/// Gantt chart primitive
+pub const gantt = struct {
+    pub const model = @import("primitives/gantt/model.zig");
+    pub const layout = @import("primitives/gantt/layout.zig");
+    pub const ir = @import("primitives/gantt/ir.zig");
+    pub const Gantt = model.Gantt;
+    pub const toDrawing = @import("primitives/gantt/ir.zig").toDrawing;
+};
+
 // ============================================================================
 // Layout configuration
 // ============================================================================

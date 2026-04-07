@@ -74,6 +74,9 @@ pub const convertLayoutIR = drawing_convert.convertLayoutIR;
 /// Node shape definitions
 pub const node_shapes = @import("core/shapes.zig");
 pub const NodeShape = graph.NodeShape;
+pub const LineStyle = graph.LineStyle;
+pub const MarkerType = graph.MarkerType;
+pub const EdgeDecorator = graph.EdgeDecorator;
 pub const LayoutNode = ir.LayoutNode;
 pub const LayoutEdge = ir.LayoutEdge;
 pub const EdgePath = ir.EdgePath;

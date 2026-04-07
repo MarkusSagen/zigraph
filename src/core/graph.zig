@@ -164,6 +164,35 @@ pub const Subgraph = struct {
     parent_id: ?usize = null,
 };
 
+/// Line rendering style for edges.
+pub const LineStyle = enum {
+    solid,
+    dashed,
+    dotted,
+    bold,
+};
+
+/// Marker types for edge endpoints.
+pub const MarkerType = enum {
+    none,
+    arrow,
+    hollow_arrow,
+    diamond,
+    hollow_diamond,
+    circle,
+    crow_foot_one,
+    crow_foot_many,
+    crow_foot_zero_one,
+    crow_foot_zero_many,
+};
+
+/// Edge styling: line style + endpoint markers.
+pub const EdgeDecorator = struct {
+    line_style: LineStyle = .solid,
+    start_marker: MarkerType = .none,
+    end_marker: MarkerType = .arrow,
+};
+
 /// An edge connecting two nodes.
 pub const Edge = struct {
     /// Source node ID
@@ -174,6 +203,8 @@ pub const Edge = struct {
     directed: bool = true,
     /// Optional label (e.g., "depends on")
     label: ?[]const u8 = null,
+    /// Edge styling (line style + markers)
+    decorator: EdgeDecorator = .{},
 };
 
 /// A graph with layout capabilities.
@@ -1080,4 +1111,34 @@ test "Graph: node with lines creates correct height" {
     // Height = top border + header + separator + 3 lines + bottom border = 7
     try std.testing.expectEqual(@as(usize, 7), node.height);
     try std.testing.expectEqual(@as(usize, 3), node.lines.len);
+}
+
+test "EdgeDecorator: default values" {
+    const dec = EdgeDecorator{};
+    try std.testing.expect(dec.line_style == .solid);
+    try std.testing.expect(dec.start_marker == .none);
+    try std.testing.expect(dec.end_marker == .arrow);
+}
+
+test "EdgeDecorator: ER diagram style" {
+    const dec = EdgeDecorator{
+        .line_style = .solid,
+        .start_marker = .crow_foot_many,
+        .end_marker = .crow_foot_one,
+    };
+    try std.testing.expect(dec.start_marker == .crow_foot_many);
+    try std.testing.expect(dec.end_marker == .crow_foot_one);
+}
+
+test "Edge: carries decorator" {
+    const edge = Edge{
+        .from = 1,
+        .to = 2,
+        .decorator = .{
+            .line_style = .dashed,
+            .end_marker = .hollow_arrow,
+        },
+    };
+    try std.testing.expect(edge.decorator.line_style == .dashed);
+    try std.testing.expect(edge.decorator.end_marker == .hollow_arrow);
 }

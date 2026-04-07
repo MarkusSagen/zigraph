@@ -201,6 +201,12 @@ pub fn LayoutEdge(comptime Coord: type) type {
         label_x: Coord = 0,
         /// Computed label Y position (set during layout)
         label_y: Coord = 0,
+        /// Edge line style from graph model
+        line_style: graph_mod.LineStyle = .solid,
+        /// Start marker from graph model
+        start_marker: graph_mod.MarkerType = .none,
+        /// End marker from graph model
+        end_marker: graph_mod.MarkerType = .arrow,
     };
 }
 
@@ -468,6 +474,9 @@ pub fn LayoutIR(comptime Coord: type) type {
                     .label = edge.label,
                     .label_x = coordCast(Target, Coord, edge.label_x),
                     .label_y = coordCast(Target, Coord, edge.label_y),
+                    .line_style = edge.line_style,
+                    .start_marker = edge.start_marker,
+                    .end_marker = edge.end_marker,
                 }) catch |err| {
                     var p = converted_path;
                     p.deinit();
@@ -701,6 +710,36 @@ test "EdgePath: bus variant round-trip" {
     try std.testing.expect(path == .bus);
     try std.testing.expectEqual(@as(usize, 3), path.bus.horizontal_y);
     try std.testing.expectEqual(true, path.bus.is_stem);
+}
+
+test "LayoutEdge: decorator fields propagate through convertCoord" {
+    const allocator = std.testing.allocator;
+
+    var source = TestLayoutIR.init(allocator);
+    defer source.deinit();
+
+    try source.addEdge(.{
+        .from_id = 1,
+        .to_id = 2,
+        .from_x = 10,
+        .from_y = 5,
+        .to_x = 10,
+        .to_y = 15,
+        .path = .{ .direct = {} },
+        .edge_index = 0,
+        .line_style = .dashed,
+        .start_marker = .circle,
+        .end_marker = .crow_foot_many,
+    });
+    source.setDimensions(40, 20);
+
+    var converted = try source.convertCoord(f32, allocator);
+    defer converted.deinit();
+
+    const edge = converted.edges.items[0];
+    try std.testing.expect(edge.line_style == .dashed);
+    try std.testing.expect(edge.start_marker == .circle);
+    try std.testing.expect(edge.end_marker == .crow_foot_many);
 }
 
 // JSON export tests moved to render/json.zig
